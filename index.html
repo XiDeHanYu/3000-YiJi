@@ -1,0 +1,3495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Thêm viewport để tối ưu hóa di động -->
+    <title>Luyện tập chữ Hán</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding-bottom: 300px; /* Mặc định cho màn hình lớn */
+            background-color: #f7fbf3; /*f7fbf3  3f4040*/
+        }
+        #gameContainer {
+            display: block;
+            min-height: calc(100vh - 150px); /* Đảm bảo nội dung chiếm đủ chiều cao màn hình */
+        }
+        #infoBox { 
+            width: 95%; 
+            max-width: 700px;
+            min-height: 100px; 
+            margin: 0 auto; 
+            border: 2px solid #91b66f; /*041b31 1f4263*/
+            background: #85ae5f; /*ecf2e4 fefefc*/
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: clamp(40px, 5vw, 60px);
+            font-weight: bold;
+        }
+        #contactBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 2px solid #91b66f; 
+            background: #85ae5f; 
+            color: #f1c232; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #instructionBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 2px solid #91b66f; 
+            background: #85ae5f; 
+            color: #f7e19c; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #controls { 
+            position: fixed; /* Cố định ở cuối màn hình */
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 800px; /* Giới hạn chiều rộng tối đa */
+            background: #f7fbf3;
+			border: 3px solid #f7fbf3;			
+            padding: 10px 0; 
+           /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); */
+            z-index: 1000; 
+        }
+        #controls div {
+            margin: 5px 0; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button { 
+            padding: 8px 8px; 
+            margin: 0 5px; 
+            cursor: pointer; 
+            border: 2px solid #85ae5f; 
+            background: #85ae5f; /*192332*/
+			box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+            color: #fffbef; 
+            font-size: 28px; 
+            border-radius: 5px; 
+        }
+        #sentenceNumber { 
+            width: 50px; 
+            padding: 10px; 
+            text-align: center; 
+            border: 3px solid #85ae5f; /*041b31 68838B*/
+            background: #f1cc76; 
+            color: #000; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            -moz-appearance: textfield; 
+        }
+        #sentenceNumber::-webkit-inner-spin-button, 
+        #sentenceNumber::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        #sentenceNumber:disabled { 
+            background: #eee; 
+        }
+        .disabled { 
+            cursor: not-allowed; 
+            pointer-events: none; 
+        }
+        .active-mode { 
+            border: 2px solid #fed16a; 
+        }
+        #indicator { 
+            width: 95%;
+                        max-width: 700px; 
+            min-height: 50px; 
+            margin: 10px auto; 
+                        padding: 5px;
+            border: 3px solid #fed16a; 
+            background: #ffffe0; 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #optionsContainer {
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto;
+        }
+        .optionBtn {
+            width: 95%; 
+            max-width: 700px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #ffffff;
+            background: #ffffff; /*E6EDD9*/
+            color: #000000;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 30px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .optionBtn:hover {
+            background: #D2E4C4;
+        }
+        .correct {
+            background: #B7D7AA !important;
+        }
+        .wrong {
+            background: #CE6D5E !important;
+        }
+        #score { 
+            display: none; 
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto; 
+            color: #FF6820; 
+            font-size: 30px; 
+            text-align: center;
+        }
+        #wrongSentences { 
+            display: none; 
+            width: 95%; 
+            max-width: 700px; 
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #CE6D5E; 
+            background: #FFF0F0; 
+            color: #CE6D5E; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+        }
+        #results { 
+            display: none; 
+            width: 95%;
+            max-width: 700px;        
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #734A2E; 
+            background: #fffbef; 
+            color: #000; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+            white-space: pre-line;
+        }
+
+        /* Media query cho thiết bị di động */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 200px; /* Giảm padding-bottom cho điện thoại */
+            }
+            #controls {
+                padding: 5px 0; /* Giảm padding */
+            }
+            button {
+                padding: 6px 6px; /* Giảm kích thước nút */
+                font-size: 20px; /* Giảm kích thước chữ */
+            }
+            #sentenceNumber {
+                width: 40px; /* Giảm chiều rộng */
+                padding: 8px; /* Giảm padding */
+                font-size: 14px; /* Giảm kích thước chữ */
+            }
+            .optionBtn {
+                font-size: 20px; /* Giảm kích thước chữ cho đáp án */
+                padding: 8px; /* Giảm padding */
+            }
+            #infoBox {
+                font-size: clamp(30px, 4vw, 40px); /* Giảm kích thước chữ */
+            }
+            #contactBox, #instructionBox {
+                font-size: clamp(14px, 2vw, 16px); /* Giảm kích thước chữ */
+            }
+            #indicator {
+                min-height: 40px; /* Giảm chiều cao tối thiểu */
+            }
+            #results, #wrongSentences, #score {
+                font-size: 24px; /* Giảm kích thước chữ */
+                                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="infoBox">习得汉字<br>记忆练习</div>
+        <div id="contactBox">讲师-阮玉煌 | Weixin：XiDeYueNanYu</div>
+        <div id="instructionBox">请选择正确的词语填入句子中 / 1级</div>
+        <div id="indicator"></div>
+        <div id="optionsContainer"></div>
+        <div id="results"></div>
+        <div id="score">0/0</div>
+        <div id="wrongSentences"></div>
+    </div>
+    <div id="controls">
+        <div>
+            <button id="freeModeBtn" class="active-mode">自由模式</button>
+            <button id="testModeBtn">作业模式</button>
+        </div>
+        <div>
+            <button id="autoContinueBtn">自动继续</button>
+        </div>
+        <div>
+            <button id="prevBtn">◀</button>
+            <input type="text" id="sentenceNumber" inputmode="numeric" pattern="[0-9]*">
+            <button id="nextBtn">▶</button>
+        </div>
+    </div>
+    <audio id="correctAudio" src="Dung.mp3"></audio>
+    <audio id="wrongAudio" src="Sai.mp3"></audio>
+
+    <script>
+        const correctAudio = document.getElementById('correctAudio');
+        const wrongAudio = document.getElementById('wrongAudio');
+        const indicator = document.getElementById('indicator');
+        const sentenceNumber = document.getElementById('sentenceNumber');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const freeModeBtn = document.getElementById('freeModeBtn');
+        const testModeBtn = document.getElementById('testModeBtn');
+        const autoContinueBtn = document.getElementById('autoContinueBtn');
+        const scoreDisplay = document.getElementById('score');
+        const wrongSentencesDisplay = document.getElementById('wrongSentences');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const resultsDisplay = document.getElementById('results');
+
+        const buttons = [prevBtn, nextBtn, freeModeBtn, testModeBtn, autoContinueBtn];
+
+const sentences = [
+    {
+        "correctAnswer": "爱情",
+        "cauGoc": "他们之间的 àiqíng 让人羡慕。",
+        "options": [
+            "哀情",
+            "矮清",
+            "碍晴",
+            "爱情",
+        ]
+    },
+    {
+        "correctAnswer": "八月",
+        "cauGoc": "每年的 bāyuè 都是最热的时候。",
+        "options": [
+            "叭月",
+            "扒月",
+            "八月",
+            "叭玥",
+        ]
+    },
+    {
+        "correctAnswer": "爸爸",
+        "cauGoc": "我的 bàba 非常爱我。",
+        "options": [
+            "巴巴",
+            "粑粑",
+            "罢罢",
+            "爸爸",
+        ]
+    },
+    {
+        "correctAnswer": "好吧",
+        "cauGoc": "他想了想，最后说：“hǎoba，我同意。”",
+        "options": [
+            "好白",
+            "好巴",
+            "好拍",
+            "好吧",
+        ]
+    },
+    {
+        "correctAnswer": "白天",
+        "cauGoc": "他喜欢在 báitiān 的时候去公园散步。",
+        "options": [
+            "白大",
+            "白夭",
+            "白日",
+            "白天",
+        ]
+    },
+    {
+        "correctAnswer": "百年",
+        "cauGoc": "这座古桥已经 bǎinián 了，依然坚固如初。",
+        "options": [
+            "白念",
+            "佰年",
+            "百粘",
+            "百年",
+        ]
+    },
+    {
+        "correctAnswer": "班级",
+        "cauGoc": "我们 bānjí 的同学都很友好。",
+        "options": [
+            "板级",
+            "斑及",
+            "班集",
+            "班级",
+        ]
+    },
+    {
+        "correctAnswer": "半夜",
+        "cauGoc": "他 bànyè 醒来，发现外面下起了大雨。",
+        "options": [
+            "半液",
+            "伴夜",
+            "拌叶",
+            "半夜",
+        ]
+    },
+    {
+        "correctAnswer": "帮忙",
+        "cauGoc": "他主动 bāngmáng，解决了我的难题。",
+        "options": [
+            "邦芒",
+            "帮芒",
+            "邦忙",
+            "帮忙",
+        ]
+    },
+    {
+        "correctAnswer": "包括",
+        "cauGoc": "这份报告 bāokuò 了所有重要的数据。",
+        "options": [
+            "包恬",
+            "饱阔",
+            "抱刮",
+            "包括",
+        ]
+    },
+    {
+        "correctAnswer": "杯子",
+        "cauGoc": "他拿起 bēizi，喝了一口水。",
+        "options": [
+            "怀子",
+            "杯于",
+            "坏孖",
+            "杯子",
+        ]
+    },
+    {
+        "correctAnswer": "北京",
+        "cauGoc": "他计划明年去 Běijīng 旅游。",
+        "options": [
+            "北惊",
+            "背京",
+            "北京",
+            "北睛",
+        ]
+    },
+    {
+        "correctAnswer": "准备",
+        "cauGoc": "他正在 zhǔnbèi 明天的考试。",
+        "options": [
+            "准俻",
+            "淮各",
+            "凖备",
+            "准备",
+        ]
+    },
+    {
+        "correctAnswer": "本来",
+        "cauGoc": "他 běnlái 就不喜欢参加这种活动。",
+        "options": [
+            "术来",
+            "木来",
+            "未末",
+            "本来",
+        ]
+    },
+    {
+        "correctAnswer": "比较",
+        "cauGoc": "他对两种方案进行了 bǐjiào，最终选择了更优的那个。",
+        "options": [
+            "笔角",
+            "毕教",
+            "比交",
+            "比较",
+        ]
+    },
+    {
+        "correctAnswer": "旁边",
+        "cauGoc": "他坐在我 pángbiān，静静地看书。",
+        "options": [
+            "傍边",
+            "傍变",
+            "旁变",
+            "旁边",
+        ]
+    },
+    {
+        "correctAnswer": "别人",
+        "cauGoc": "他总是喜欢帮助 biéren。",
+        "options": [
+            "别认",
+            "别人",
+            "别任",
+            "别仁",
+        ]
+    },
+    {
+        "correctAnswer": "病人",
+        "cauGoc": "医生正在给 bìngrén 做检查。",
+        "options": [
+            "病大",
+            "病从",
+            "病人",
+            "病木",
+        ]
+    },
+    {
+        "correctAnswer": "不同",
+        "cauGoc": "他们俩的性格 bùtóng，很难相处。",
+        "options": [
+            "不洞",
+            "布铜",
+            "步同",
+            "不同",
+        ]
+    },
+    {
+        "correctAnswer": "蔬菜",
+        "cauGoc": "妈妈每天都去市场买新鲜的 shūcài。",
+        "options": [
+            "蔬采",
+            "蔬莱",
+            "蔬菓",
+            "蔬菜",
+        ]
+    },
+    {
+        "correctAnswer": "茶叶",
+        "cauGoc": "他每天早上都会喝一杯 cháyè。",
+        "options": [
+            "查叶",
+            "茶业",
+            "荼叶",
+            "茶叶",
+        ]
+    },
+    {
+        "correctAnswer": "差别",
+        "cauGoc": "他们之间的 chābié 很明显。",
+        "options": [
+            "插别",
+            "查别",
+            "叉别",
+            "差别",
+        ]
+    },
+    {
+        "correctAnswer": "经常",
+        "cauGoc": "他 jīngcháng 去图书馆看书。",
+        "options": [
+            "经掌",
+            "轻尝",
+            "茎长",
+            "经常",
+        ]
+    },
+    {
+        "correctAnswer": "场合",
+        "cauGoc": "在正式的 chǎnghé 中，我们要注意自己的言行举止。",
+        "options": [
+            "场各",
+            "场河",
+            "场合",
+            "场盒",
+        ]
+    },
+    {
+        "correctAnswer": "唱歌",
+        "cauGoc": "她非常喜欢 chànggē，每天都会练习。",
+        "options": [
+            "倡哥",
+            "昌戈",
+            "唱割",
+            "唱歌",
+        ]
+    },
+    {
+        "correctAnswer": "汽车",
+        "cauGoc": "他买了一辆 qìchē。",
+        "options": [
+            "气扯",
+            "汽彻",
+            "气车",
+            "汽车",
+        ]
+    },
+    {
+        "correctAnswer": "吃饭",
+        "cauGoc": "他每天中午都会去食堂 chīfàn。",
+        "options": [
+            "乞返",
+            "叱犯",
+            "吃贩",
+            "吃饭",
+        ]
+    },
+    {
+        "correctAnswer": "出现",
+        "cauGoc": "在会议上，他 chūxiàn 了。",
+        "options": [
+            "山现",
+            "出砚",
+            "出见",
+            "出现",
+        ]
+    },
+    {
+        "correctAnswer": "穿衣",
+        "cauGoc": "他每天早上都要花很长时间 chuānyī。",
+        "options": [
+            "串依",
+            "传衣",
+            "穿依",
+            "穿衣",
+        ]
+    },
+    {
+        "correctAnswer": "床铺",
+        "cauGoc": "他整理好 chuángpù 后，便躺下休息了。",
+        "options": [
+            "庄捕",
+            "床朴",
+            "庄扑",
+            "床铺",
+        ]
+    },
+    {
+        "correctAnswer": "次数",
+        "cauGoc": "他参加比赛的 cìshù 已经超过了十次。",
+        "options": [
+            "欠数",
+            "次教",
+            "次数",
+            "次收",
+        ]
+    },
+    {
+        "correctAnswer": "从此",
+        "cauGoc": "cóngcǐ 以后，我们再也没有见过面。",
+        "options": [
+            "从些",
+            "从比",
+            "丛此",
+            "从此",
+        ]
+    },
+    {
+        "correctAnswer": "错误",
+        "cauGoc": "他发现自己犯了一个 cuòwù。",
+        "options": [
+            "措务",
+            "借务",
+            "错物",
+            "错误",
+        ]
+    },
+    {
+        "correctAnswer": "答案",
+        "cauGoc": "这个问题很难，他一直在寻找 dààn。",
+        "options": [
+            "大安",
+            "达案",
+            "答按",
+            "答案",
+        ]
+    },
+    {
+        "correctAnswer": "打电话",
+        "cauGoc": "他每天都会给家人 dǎdiànhuà。",
+        "options": [
+            "打电花",
+            "打电活",
+            "打电华",
+            "打电话",
+        ]
+    },
+    {
+        "correctAnswer": "大学",
+        "cauGoc": "他今年考上了 dàxué，全家人都为他感到高兴。",
+        "options": [
+            "太学",
+            "犬学",
+            "夭学",
+            "大学",
+        ]
+    },
+    {
+        "correctAnswer": "鸡蛋",
+        "cauGoc": "早餐我吃了一个 jīdàn。",
+        "options": [
+            "肌旦",
+            "机但",
+            "击胆",
+            "鸡蛋",
+        ]
+    },
+    {
+        "correctAnswer": "到达",
+        "cauGoc": "我们终于 dàodá 了目的地。",
+        "options": [
+            "倒达",
+            "到过",
+            "到达",
+            "到远",
+        ]
+    },
+    {
+        "correctAnswer": "道理",
+        "cauGoc": "他讲了很多 dàolǐ，但大家还是不明白。",
+        "options": [
+            "到里",
+            "道埋",
+            "倒理",
+            "道理",
+        ]
+    },
+    {
+        "correctAnswer": "得到",
+        "cauGoc": "他经过努力，终于 dédào 了这份工作。",
+        "options": [
+            "得道",
+            "德到",
+            "得到",
+            "德道",
+        ]
+    },
+    {
+        "correctAnswer": "地方",
+        "cauGoc": "这个地方的风景非常美丽。",
+        "options": [
+            "他方",
+            "地万",
+            "也方",
+            "地方",
+        ]
+    },
+    {
+        "correctAnswer": "的确",
+        "cauGoc": "他的表现 díquè 令人印象深刻。",
+        "options": [
+            "的却",
+            "笛雀",
+            "敌确",
+            "的确",
+        ]
+    },
+    {
+        "correctAnswer": "待待",
+        "cauGoc": "他一直在车站 dàidài 着朋友的到来。",
+        "options": [
+            "侍代",
+            "诗贷",
+            "待待",
+            "寺贷",
+        ]
+    },
+    {
+        "correctAnswer": "弟弟",
+        "cauGoc": "我的 dìdì 今年上小学了。",
+        "options": [
+            "递递",
+            "第第",
+            "弟弟",
+            "笛笛",
+        ]
+    },
+    {
+        "correctAnswer": "第一",
+        "cauGoc": "在这次比赛中，他获得了 dìyī 名。",
+        "options": [
+            "弟乙",
+            "第弌",
+            "苐一",
+            "第一",
+        ]
+    },
+    {
+        "correctAnswer": "重点",
+        "cauGoc": "老师强调了 zhòngdiǎn 内容。",
+        "options": [
+            "仲点",
+            "重占",
+            "仲占",
+            "重点",
+        ]
+    },
+    {
+        "correctAnswer": "电脑",
+        "cauGoc": "他买了一台新的 diànnǎo。",
+        "options": [
+            "电恼",
+            "佃脑",
+            "甸瑙",
+            "电脑",
+        ]
+    },
+    {
+        "correctAnswer": "商店",
+        "cauGoc": "这条街上有很多 shāngdiàn。",
+        "options": [
+            "商电",
+            "商店",
+            "商占",
+            "商点",
+        ]
+    },
+    {
+        "correctAnswer": "东方",
+        "cauGoc": "每天早上，太阳从 dōngfāng 升起。",
+        "options": [
+            "东万",
+            "冻方",
+            "东方",
+            "东文",
+        ]
+    },
+    {
+        "correctAnswer": "运动",
+        "cauGoc": "他每天都会去公园 yùndòng，保持身体健康。",
+        "options": [
+            "远动",
+            "运劫",
+            "运劲",
+            "运动",
+        ]
+    },
+    {
+        "correctAnswer": "都市",
+        "cauGoc": "他梦想着在大 dūshì 里生活，感受繁华与机遇。",
+        "options": [
+            "都币",
+            "都市",
+            "都柿",
+            "都事",
+        ]
+    },
+    {
+        "correctAnswer": "读书",
+        "cauGoc": "他每天都会花时间 dúshū。",
+        "options": [
+            "读熟",
+            "渎书",
+            "读抒",
+            "读书",
+        ]
+    },
+    {
+        "correctAnswer": "对比",
+        "cauGoc": "在科学研究中，经常需要 duìbǐ 不同实验组的数据。",
+        "options": [
+            "对北",
+            "队比",
+            "怼彼",
+            "对比",
+        ]
+    },
+    {
+        "correctAnswer": "多少",
+        "cauGoc": "你知道这个苹果 duōshǎo 钱吗？",
+        "options": [
+            "多小",
+            "夕少",
+            "夺秒",
+            "多少",
+        ]
+    },
+    {
+        "correctAnswer": "饥饿",
+        "cauGoc": "由于长时间没有进食，他感到 jī'è 难耐。",
+        "options": [
+            "讥饿",
+            "机饿",
+            "肌饿",
+            "饥饿",
+        ]
+    },
+    {
+        "correctAnswer": "儿子",
+        "cauGoc": "他非常爱他的 érzi。",
+        "options": [
+            "儿孑",
+            "儿子",
+            "儿于",
+            "儿孓",
+        ]
+    },
+    {
+        "correctAnswer": "二月",
+        "cauGoc": "今年的 èryuè 特别温暖。",
+        "options": [
+            "二月",
+            "二朋",
+            "二明",
+            "二用",
+        ]
+    },
+    {
+        "correctAnswer": "吃饭",
+        "cauGoc": "他每天中午都会去食堂 chīfàn。",
+        "options": [
+            "叱反",
+            "吃贩",
+            "叱饭",
+            "吃饭",
+        ]
+    },
+    {
+        "correctAnswer": "方法",
+        "cauGoc": "他找到了一种新的 fāngfǎ 来解决这个问题。",
+        "options": [
+            "方发",
+            "访法",
+            "房筏",
+            "方法",
+        ]
+    },
+    {
+        "correctAnswer": "房间",
+        "cauGoc": "这个 fángjiān 非常宽敞明亮。",
+        "options": [
+            "房简",
+            "坊间",
+            "芳间",
+            "房间",
+        ]
+    },
+    {
+        "correctAnswer": "放心",
+        "cauGoc": "你可以 fàngxīn，我们会照顾好你的孩子。",
+        "options": [
+            "放必",
+            "仿心",
+            "方忻",
+            "放心",
+        ]
+    },
+    {
+        "correctAnswer": "飞机",
+        "cauGoc": "他第一次坐 fēijī 时非常兴奋。",
+        "options": [
+            "飞朵",
+            "飞朵",
+            "飞朶",
+            "飞机",
+        ]
+    },
+    {
+        "correctAnswer": "非常",
+        "cauGoc": "他对这个结果 fēicháng 满意。",
+        "options": [
+            "非长",
+            "菲常",
+            "啡场",
+            "非常",
+        ]
+    },
+    {
+        "correctAnswer": "分开",
+        "cauGoc": "他们决定 fēnkāi 一段时间，各自冷静一下。",
+        "options": [
+            "分并",
+            "分闻",
+            "分间",
+            "分开",
+        ]
+    },
+    {
+        "correctAnswer": "风景",
+        "cauGoc": "这片 fēngjǐng 真是美不胜收。",
+        "options": [
+            "风影",
+            "风晴",
+            "风清",
+            "风景",
+        ]
+    },
+    {
+        "correctAnswer": "衣服",
+        "cauGoc": "她今天穿了一件漂亮的 yīfu。",
+        "options": [
+            "依幅",
+            "移福",
+            "医付",
+            "衣服",
+        ]
+    },
+    {
+        "correctAnswer": "干净",
+        "cauGoc": "这个房间被打扫得非常 gānjìng。",
+        "options": [
+            "千争",
+            "干争",
+            "千净",
+            "干净",
+        ]
+    },
+    {
+        "correctAnswer": "高兴",
+        "cauGoc": "听到这个消息，他感到非常 gāoxìng。",
+        "options": [
+            "高星",
+            "高幸",
+            "高杏",
+            "高兴",
+        ]
+    },
+    {
+        "correctAnswer": "告别",
+        "cauGoc": "在机场，他们互相 gàobié，眼中含着泪水。",
+        "options": [
+            "诰别",
+            "告列",
+            "诰列",
+            "告别",
+        ]
+    },
+    {
+        "correctAnswer": "哥哥",
+        "cauGoc": "我的 gēge 非常关心我。",
+        "options": [
+            "歌哥",
+            "各各",
+            "可可",
+            "哥哥",
+        ]
+    },
+    {
+        "correctAnswer": "歌曲",
+        "cauGoc": "他最喜欢听这首 gēqǔ。",
+        "options": [
+            "哥取",
+            "歌去",
+            "各曲",
+            "歌曲",
+        ]
+    },
+    {
+        "correctAnswer": "个人",
+        "cauGoc": "每个人都有自己的 gèrén 空间。",
+        "options": [
+            "各人",
+            "介人",
+            "木人",
+            "个人",
+        ]
+    },
+    {
+        "correctAnswer": "给予",
+        "cauGoc": "老师常常 gěiyǔ 我们很多鼓励。",
+        "options": [
+            "给于",
+            "级与",
+            "给予",
+            "给与",
+        ]
+    },
+    {
+        "correctAnswer": "跟班",
+        "cauGoc": "他每天像个 gēnbān 一样跟着老板。",
+        "options": [
+            "根班",
+            "跟般",
+            "艮板",
+            "跟班",
+        ]
+    },
+    {
+        "correctAnswer": "工作",
+        "cauGoc": "他每天都很认真地 gōngzuò。",
+        "options": [
+            "工昨",
+            "工昨",
+            "工昨",
+            "工作",
+        ]
+    },
+    {
+        "correctAnswer": "关心",
+        "cauGoc": "他总是很 guānxīn 我的学习情况。",
+        "options": [
+            "贯心",
+            "关必",
+            "观心",
+            "关心",
+        ]
+    },
+    {
+        "correctAnswer": "宾馆",
+        "cauGoc": "我们预订了一家靠近市中心的 bīnguǎn。",
+        "options": [
+            "兵馆",
+            "冰管",
+            "丙官",
+            "宾馆",
+        ]
+    },
+    {
+        "correctAnswer": "昂贵",
+        "cauGoc": "这件艺术品价格 ángguì，不是一般人能买得起的。",
+        "options": [
+            "昂责",
+            "昂贵",
+            "昂贵",
+            "昂赉",
+        ]
+    },
+    {
+        "correctAnswer": "国家",
+        "cauGoc": "他热爱自己的 guójiā，愿意为之奉献一切。",
+        "options": [
+            "国豪",
+            "国宾",
+            "国家",
+            "国策",
+        ]
+    },
+    {
+        "correctAnswer": "水果",
+        "cauGoc": "今天超市里的 shuǐguǒ 特别新鲜。",
+        "options": [
+            "水课",
+            "木果",
+            "水果",
+            "水菓",
+        ]
+    },
+    {
+        "correctAnswer": "过去",
+        "cauGoc": "他经常回忆 guòqù 的美好时光。",
+        "options": [
+            "运云",
+            "达去",
+            "过击",
+            "过去",
+        ]
+    },
+    {
+        "correctAnswer": "还是",
+        "cauGoc": "你 hǎishì 决定去旅行吗？",
+        "options": [
+            "海似",
+            "孩使",
+            "还实",
+            "还是",
+        ]
+    },
+    {
+        "correctAnswer": "孩子",
+        "cauGoc": "他非常疼爱自己的 háizi。",
+        "options": [
+            "孩了",
+            "该子",
+            "亥子",
+            "孩子",
+        ]
+    },
+    {
+        "correctAnswer": "汉语",
+        "cauGoc": "他对学习 hànyǔ 非常感兴趣。",
+        "options": [
+            "汉话",
+            "汉诘",
+            "汉误",
+            "汉语",
+        ]
+    },
+    {
+        "correctAnswer": "好人",
+        "cauGoc": "他经常帮助别人，真是个 hǎorén。",
+        "options": [
+            "好入",
+            "好仁",
+            "好认",
+            "好人",
+        ]
+    },
+    {
+        "correctAnswer": "号码",
+        "cauGoc": "请填写你的手机 hàomǎ。",
+        "options": [
+            "好码",
+            "号玛",
+            "号马",
+            "号码",
+        ]
+    },
+    {
+        "correctAnswer": "喝水",
+        "cauGoc": "他每天都会喝 shuǐ 保持健康。",
+        "options": [
+            "渴水",
+            "欱氺",
+            "喝氺",
+            "喝水",
+        ]
+    },
+    {
+        "correctAnswer": "和平",
+        "cauGoc": "我们渴望世界 hé píng。",
+        "options": [
+            "合评",
+            "何凭",
+            "禾苹",
+            "和平",
+        ]
+    },
+    {
+        "correctAnswer": "很好",
+        "cauGoc": "他的表现 hěnhǎo，得到了大家的认可。",
+        "options": [
+            "恨浩",
+            "佷郝",
+            "狠号",
+            "很好",
+        ]
+    },
+    {
+        "correctAnswer": "以后",
+        "cauGoc": "我们 yǐhòu 再讨论这个问题。",
+        "options": [
+            "以候",
+            "已后",
+            "以彳",
+            "以后",
+        ]
+    },
+    {
+        "correctAnswer": "时候",
+        "cauGoc": "他总是在最关键的 shíhou 出现。",
+        "options": [
+            "时侯",
+            "时后",
+            "时侯",
+            "时候",
+        ]
+    },
+    {
+        "correctAnswer": "花园",
+        "cauGoc": "春天来了，huāyuán 里的花儿都开了。",
+        "options": [
+            "化原",
+            "华苑",
+            "哗远",
+            "花园",
+        ]
+    },
+    {
+        "correctAnswer": "说话",
+        "cauGoc": "他 shuōhuà 时总是带着微笑。",
+        "options": [
+            "说活",
+            "谁话",
+            "说活",
+            "说华",
+        ]
+    },
+    {
+        "correctAnswer": "坏人",
+        "cauGoc": "他从小就知道要远离 huàirén。",
+        "options": [
+            "环人",
+            "坏入",
+            "怀仁",
+            "坏人",
+        ]
+    },
+    {
+        "correctAnswer": "欢迎",
+        "cauGoc": "我们热烈 huānyíng 新同学的到来。",
+        "options": [
+            "欢赢",
+            "欢营",
+            "欢荧",
+            "欢迎",
+        ]
+    },
+    {
+        "correctAnswer": "回答",
+        "cauGoc": "他 yóuyù 了一下，然后给出了一个明确的 huídá。",
+        "options": [
+            "回荅",
+            "回荅",
+            "回荅",
+            "回答",
+        ]
+    },
+    {
+        "correctAnswer": "会议",
+        "cauGoc": "公司决定明天召开一次重要的 huìyì。",
+        "options": [
+            "会义",
+            "汇忆",
+            "绘议",
+            "会议",
+        ]
+    },
+    {
+        "correctAnswer": "火灾",
+        "cauGoc": "昨天发生了一场严重的 huǒzāi，幸好没有人员伤亡。",
+        "options": [
+            "火灭",
+            "大灾",
+            "火炎",
+            "火灾",
+        ]
+    },
+    {
+        "correctAnswer": "机会",
+        "cauGoc": "他抓住了这次 jīhuì，成功晋升。",
+        "options": [
+            "机绘",
+            "几会",
+            "基惠",
+            "机会",
+        ]
+    },
+    {
+        "correctAnswer": "鸡蛋",
+        "cauGoc": "早餐时，他喜欢吃 jīdàn 三明治。",
+        "options": [
+            "鸡旦",
+            "肌蛋",
+            "击弹",
+            "鸡蛋",
+        ]
+    },
+    {
+        "correctAnswer": "几个",
+        "cauGoc": "他问了 jǐ gè 问题。",
+        "options": [
+            "几合",
+            "几各",
+            "几可",
+            "几个",
+        ]
+    },
+    {
+        "correctAnswer": "记忆",
+        "cauGoc": "他努力回忆，终于想起了那段模糊的 jìyì。",
+        "options": [
+            "记亿",
+            "纪忆",
+            "记议",
+            "记忆",
+        ]
+    },
+    {
+        "correctAnswer": "家庭",
+        "cauGoc": "我的 jiātíng 非常和睦。",
+        "options": [
+            "家挺",
+            "佳庭",
+            "傢廷",
+            "家庭",
+        ]
+    },
+    {
+        "correctAnswer": "假期",
+        "cauGoc": "这个 jiàqī 我打算去旅行。",
+        "options": [
+            "假旗",
+            "佳期",
+            "架起",
+            "假期",
+        ]
+    },
+    {
+        "correctAnswer": "时间",
+        "cauGoc": "他总是抱怨没有足够的 shíjiān 来完成工作。",
+        "options": [
+            "时简",
+            "实间",
+            "时涧",
+            "时间",
+        ]
+    },
+    {
+        "correctAnswer": "见面",
+        "cauGoc": "我们约好了明天在咖啡馆 jiànmiàn。",
+        "options": [
+            "见而",
+            "现面",
+            "观面",
+            "见面",
+        ]
+    },
+    {
+        "correctAnswer": "教育",
+        "cauGoc": "他的父母非常重视他的 jiàoyù。",
+        "options": [
+            "教肓",
+            "较驭",
+            "教誉",
+            "教育",
+        ]
+    },
+    {
+        "correctAnswer": "叫喊",
+        "cauGoc": "在比赛中，他大声地 jiàohǎn 着为自己的队伍加油。",
+        "options": [
+            "叫咸",
+            "咬喊",
+            "叫喊",
+            "咬咸",
+        ]
+    },
+    {
+        "correctAnswer": "感觉",
+        "cauGoc": "他 gǎnjué 到一阵凉风吹过。",
+        "options": [
+            "敢决",
+            "赶觉",
+            "感决",
+            "感觉",
+        ]
+    },
+    {
+        "correctAnswer": "姐姐",
+        "cauGoc": "我的 jiějie 非常关心我。",
+        "options": [
+            "妹妹",
+            "妈妈",
+            "奶奶",
+            "姐姐",
+        ]
+    },
+    {
+        "correctAnswer": "介绍",
+        "cauGoc": "他向我 jièshào 了他的新朋友。",
+        "options": [
+            "价绍",
+            "界韶",
+            "介邵",
+            "介绍",
+        ]
+    },
+    {
+        "correctAnswer": "今天",
+        "cauGoc": "jīntiān 的天气真好，我们一起去公园吧。",
+        "options": [
+            "令天",
+            "金天",
+            "今天",
+            "斤天",
+        ]
+    },
+    {
+        "correctAnswer": "进步",
+        "cauGoc": "他一直在努力学习，取得了很大的 jìnbù。",
+        "options": [
+            "近部",
+            "进歩",
+            "渐步",
+            "进步",
+        ]
+    },
+    {
+        "correctAnswer": "北京",
+        "cauGoc": "他计划明年去 Běijīng 旅游。",
+        "options": [
+            "北景",
+            "背京",
+            "北经",
+            "北京",
+        ]
+    },
+    {
+        "correctAnswer": "干净",
+        "cauGoc": "这个房间被打扫得非常 gānjìng。",
+        "options": [
+            "干争",
+            "于净",
+            "千争",
+            "干净",
+        ]
+    },
+    {
+        "correctAnswer": "九月",
+        "cauGoc": "我们计划在 jiǔyuè 去旅行。",
+        "options": [
+            "力月",
+            "九朋",
+            "九月",
+            "九明",
+        ]
+    },
+    {
+        "correctAnswer": "就是",
+        "cauGoc": "他 jiùshì 那个我一直想见的人。",
+        "options": [
+            "就事",
+            "旧是",
+            "救示",
+            "就是",
+        ]
+    },
+    {
+        "correctAnswer": "开始",
+        "cauGoc": "我们要 kāishǐ 新的项目了。",
+        "options": [
+            "开抬",
+            "开台",
+            "开抬",
+            "开始",
+        ]
+    },
+    {
+        "correctAnswer": "看见",
+        "cauGoc": "他 kànjiàn 了一只小鸟在树上唱歌。",
+        "options": [
+            "看贝",
+            "看现",
+            "看见",
+            "看观",
+        ]
+    },
+    {
+        "correctAnswer": "考试",
+        "cauGoc": "明天我们要进行一场重要的 kǎoshì。",
+        "options": [
+            "烤试",
+            "拷试",
+            "考式",
+            "考试",
+        ]
+    },
+	    {
+        "correctAnswer": "渴望",
+        "cauGoc": "他 kěwàng 得到更多的知识。",
+        "options": [
+            "可忘",
+            "渴忘",
+            "可望",
+            "渴望",
+        ]
+    },
+    {
+        "correctAnswer": "客人",
+        "cauGoc": "今天家里来了几位 kèrén。",
+        "options": [
+            "客入",
+            "各人",
+            "客从",
+            "客人",
+        ]
+    },
+    {
+        "correctAnswer": "课程",
+        "cauGoc": "这学期的 kèchéng 安排得非常紧凑。",
+        "options": [
+            "课裎",
+            "稞程",
+            "颗呈",
+            "课程",
+        ]
+    },
+    {
+        "correctAnswer": "口袋",
+        "cauGoc": "他把钥匙放在 kǒudài 里。",
+        "options": [
+            "口代",
+            "口伐",
+            "口袋",
+            "口伏",
+        ]
+    },
+    {
+        "correctAnswer": "一块",
+        "cauGoc": "妈妈给了我 yíkuài 巧克力。",
+        "options": [
+            "一抉",
+            "一抉",
+            "一抉",
+            "一块",
+        ]
+    },
+    {
+        "correctAnswer": "快乐",
+        "cauGoc": "她每天都会用笑声传递 kuàilè。",
+        "options": [
+            "决乐",
+            "快乐",
+            "决快",
+            "决块",
+        ]
+    },
+    {
+        "correctAnswer": "过来",
+        "cauGoc": "他听到声音后，立刻 guòlái 查看情况。",
+        "options": [
+            "过束",
+            "过采",
+            "过未",
+            "过来",
+        ]
+    },
+    {
+        "correctAnswer": "老师",
+        "cauGoc": "我们的 lǎoshī 非常关心学生的成长。",
+        "options": [
+            "老帅",
+            "老诗",
+            "老湿",
+            "老师",
+        ]
+    },
+    {
+        "correctAnswer": "了解",
+        "cauGoc": "他努力 liǎojiě 了这个问题。",
+        "options": [
+            "辽结",
+            "疗洁",
+            "了结",
+            "了解",
+        ]
+    },
+    {
+        "correctAnswer": "累赘",
+        "cauGoc": "这篇文章中的一些内容显得非常 léizhuì。",
+        "options": [
+            "累缀",
+            "垒赘",
+            "蕾缒",
+            "累赘",
+        ]
+    },
+    {
+        "correctAnswer": "冷风",
+        "cauGoc": "冬天的时候，lěngfēng 吹得人直打哆嗦。",
+        "options": [
+            "泠凤",
+            "冷凤",
+            "冷风",
+            "泠风",
+        ]
+    },
+    {
+        "correctAnswer": "里面",
+        "cauGoc": "他把书放在了 lǐmiàn 的抽屉里。",
+        "options": [
+            "里间",
+            "理面",
+            "礼面",
+            "里面",
+        ]
+    },
+    {
+        "correctAnswer": "两个",
+        "cauGoc": "他买了 liǎnggè 苹果。",
+        "options": [
+            "两可",
+            "两各",
+            "两哥",
+            "两个",
+        ]
+    },
+    {
+        "correctAnswer": "零点",
+        "cauGoc": "我们约定在 língdiǎn 见面。",
+        "options": [
+            "领垫",
+            "铃玷",
+            "零佃",
+            "零点",
+        ]
+    },
+    {
+        "correctAnswer": "六月",
+        "cauGoc": "我们计划在 liùyuè 去旅行。",
+        "options": [
+            "六朋",
+            "大月",
+            "六月",
+            "六日",
+        ]
+    },
+    {
+        "correctAnswer": "楼房",
+        "cauGoc": "这座 lóufáng 的设计非常现代化。",
+        "options": [
+            "搂房",
+            "漏芳",
+            "楼坊",
+            "楼房",
+        ]
+    },
+    {
+        "correctAnswer": "马路",
+        "cauGoc": "他每天都会沿着 mǎlù 跑步。",
+        "options": [
+            "妈路",
+            "码路",
+            "玛路",
+            "马路",
+        ]
+    },
+    {
+        "correctAnswer": "妈妈",
+        "cauGoc": "我的 māma 总是很关心我。",
+        "options": [
+            "妈妈",
+            "蚂蚂",
+            "玛玛",
+            "嬷嬷",
+        ]
+    },
+    {
+        "correctAnswer": "马上",
+        "cauGoc": "他接到通知后，mǎshàng 出发了。",
+        "options": [
+            "马下",
+            "码上",
+            "玛尚",
+            "马上",
+        ]
+    },
+    {
+        "correctAnswer": "好吗",
+        "cauGoc": "你最近 hǎo ma？",
+        "options": [
+            "好马",
+            "好妈",
+            "好吗",
+            "好嘛",
+        ]
+    },
+    {
+        "correctAnswer": "购买",
+        "cauGoc": "他决定 gòumǎi 一辆新车。",
+        "options": [
+            "够买",
+            "构卖",
+            "购麦",
+            "购买",
+        ]
+    },
+    {
+        "correctAnswer": "慢慢",
+        "cauGoc": "他 mànman 地走回了家。",
+        "options": [
+            "漫漫",
+            "曼曼",
+            "慢漫",
+            "慢慢",
+        ]
+    },
+    {
+        "correctAnswer": "忙碌",
+        "cauGoc": "他最近工作非常 mánglù，几乎没有时间休息。",
+        "options": [
+            "忙禄",
+            "芒录",
+            "盲路",
+            "忙碌",
+        ]
+    },
+    {
+        "correctAnswer": "毛巾",
+        "cauGoc": "他拿起 máojīn 擦了擦脸。",
+        "options": [
+            "毛币",
+            "毛市",
+            "毛巾",
+            "毛币",
+        ]
+    },
+    {
+        "correctAnswer": "什么",
+        "cauGoc": "你 shénme 时候回来？",
+        "options": [
+            "什幺",
+            "什公",
+            "什久",
+            "什么",
+        ]
+    },
+    {
+        "correctAnswer": "没有",
+        "cauGoc": "他 méiyǒu 带伞，结果被雨淋湿了。",
+        "options": [
+            "没右",
+            "沫友",
+            "煤有",
+            "没有",
+        ]
+    },
+    {
+        "correctAnswer": "妹妹",
+        "cauGoc": "我的 mèimei 非常可爱。",
+        "options": [
+            "妹妹",
+            "昧昧",
+            "姝姝",
+            "魅魅",
+        ]
+    },
+    {
+        "correctAnswer": "门口",
+        "cauGoc": "他站在 ménkǒu，等待着朋友的到来。",
+        "options": [
+            "问口",
+            "间口",
+            "门口",
+            "们口",
+        ]
+    },
+    {
+        "correctAnswer": "我们",
+        "cauGoc": "wǒmen 一起去公园玩吧。",
+        "options": [
+            "找们",
+            "我门",
+            "们我",
+            "我们",
+        ]
+    },
+    {
+        "correctAnswer": "米饭",
+        "cauGoc": "今天的午餐有 mǐfàn 和红烧肉。",
+        "options": [
+            "迷返",
+            "眯贩",
+            "咪饭",
+            "米饭",
+        ]
+    },
+    {
+        "correctAnswer": "面包",
+        "cauGoc": "我每天早上都会吃 miànbāo 当早餐。",
+        "options": [
+            "面饱",
+            "免包",
+            "棉抱",
+            "面包",
+        ]
+    },
+    {
+        "correctAnswer": "名字",
+        "cauGoc": "我的 míngzì 是李华。",
+        "options": [
+            "明字",
+            "铭自",
+            "茗子",
+            "名字",
+        ]
+    },
+    {
+        "correctAnswer": "明天",
+        "cauGoc": "他决定 míngtiān 去旅行。",
+        "options": [
+            "明大",
+            "鸣天",
+            "明夭",
+            "明天",
+        ]
+    },
+    {
+        "correctAnswer": "拿手",
+        "cauGoc": "这道菜是他的 náshǒu 好菜。",
+        "options": [
+            "那守",
+            "捺首",
+            "拿手",
+            "纳收",
+        ]
+    },
+    {
+        "correctAnswer": "哪里",
+        "cauGoc": "你刚才说 nǎlǐ 有家好吃的餐厅？",
+        "options": [
+            "那哩",
+            "哪理",
+            "那理",
+            "哪里",
+        ]
+    },
+    {
+        "correctAnswer": "那个",
+        "cauGoc": "nàge 人是谁？",
+        "options": [
+            "哪可",
+            "那各",
+            "纳格",
+            "那个",
+        ]
+    },
+    {
+        "correctAnswer": "牛奶",
+        "cauGoc": "每天早上，我都会喝一杯 niúnǎi。",
+        "options": [
+            "午奶",
+            "牛乃",
+            "牧奶",
+            "牛奶",
+        ]
+    },
+    {
+        "correctAnswer": "男人",
+        "cauGoc": "他是一位非常有责任心的 nánrén。",
+        "options": [
+            "男入",
+            "南人",
+            "难忍",
+            "男人",
+        ]
+    },
+    {
+        "correctAnswer": "南方",
+        "cauGoc": "我计划明年去 nánfāng 旅行。",
+        "options": [
+            "难芳",
+            "喃访",
+            "南访",
+            "南方",
+        ]
+    },
+    {
+        "correctAnswer": "困难",
+        "cauGoc": "面对这些 kùnnán，他从未放弃。",
+        "options": [
+            "困堆",
+            "困推",
+            "困准",
+            "困难",
+        ]
+    },
+    {
+        "correctAnswer": "电脑",
+        "cauGoc": "我最近买了一台新的 diànnǎo。",
+        "options": [
+            "电恼",
+            "佃脑",
+            "垫脑",
+            "电脑",
+        ]
+    },
+    {
+        "correctAnswer": "呢子",
+        "cauGoc": "这件大衣是用高质量的 nízi 制成的。",
+        "options": [
+            "呢仔",
+            "尼籽",
+            "妮子",
+            "呢子",
+        ]
+    },
+    {
+        "correctAnswer": "能力",
+        "cauGoc": "他相信自己有nénglì完成这项任务。",
+        "options": [
+            "熊力",
+            "能办",
+            "熊办",
+            "能力",
+        ]
+    },
+    {
+        "correctAnswer": "你好",
+        "cauGoc": "他走进教室，微笑着对大家说：“nǐhǎo！”",
+        "options": [
+            "你女",
+            "尔好",
+            "你子",
+            "你好",
+        ]
+    },
+    {
+        "correctAnswer": "新年",
+        "cauGoc": "我们全家一起庆祝 xīnnián。",
+        "options": [
+            "新念",
+            "欣年",
+            "心年",
+            "新年",
+        ]
+    },
+    {
+        "correctAnswer": "您好",
+        "cauGoc": "每天早上见到老师，我都会说 nínhǎo。",
+        "options": [
+            "您浩",
+            "您好",
+            "您号",
+            "您郝",
+        ]
+    },
+    {
+        "correctAnswer": "牛奶",
+        "cauGoc": "他每天早上都会喝一杯 niúnǎi。",
+        "options": [
+            "牟奶",
+            "牧氖",
+            "牛氖",
+            "牛奶",
+        ]
+    },
+    {
+        "correctAnswer": "女人",
+        "cauGoc": "她是一位非常成功的 nǚrén。",
+        "options": [
+            "女从",
+            "奴人",
+            "女子",
+            "女人",
+        ]
+    },
+    {
+        "correctAnswer": "旁边",
+        "cauGoc": "他坐在我的 pángbiān，一直没说话。",
+        "options": [
+            "傍边",
+            "傍便",
+            "旁便",
+            "旁边",
+        ]
+    },
+    {
+        "correctAnswer": "跑步",
+        "cauGoc": "他每天早上都会去公园 pǎobù。",
+        "options": [
+            "跑布",
+            "跑本",
+            "跑不",
+            "跑步",
+        ]
+    },
+    {
+        "correctAnswer": "朋友",
+        "cauGoc": "他是我最好的 péngyou。",
+        "options": [
+            "朋右",
+            "棚友",
+            "鹏有",
+            "朋友",
+        ]
+    },
+    {
+        "correctAnswer": "车票",
+        "cauGoc": "他忘记带 chēpiào 了，只好重新买一张。",
+        "options": [
+            "车飘",
+            "车漂",
+            "车镖",
+            "车票",
+        ]
+    },
+    {
+        "correctAnswer": "七月",
+        "cauGoc": "每年的 qīyuè 都是最热的季节。",
+        "options": [
+            "期月",
+            "其越",
+            "欺阅",
+            "七月",
+        ]
+    },
+    {
+        "correctAnswer": "期待",
+        "cauGoc": "他对即将到来的假期充满 qīdài。",
+        "options": [
+            "欺待",
+            "欺代",
+            "期代",
+            "期待",
+        ]
+    },
+    {
+        "correctAnswer": "起来",
+        "cauGoc": "他听到闹钟响后，立刻 qǐlái 了。",
+        "options": [
+            "起未",
+            "超来",
+            "赶起",
+            "起来",
+        ]
+    },
+    {
+        "correctAnswer": "空气",
+        "cauGoc": "今天的 kōngqì 特别清新。",
+        "options": [
+            "空汽",
+            "孔气",
+            "控气",
+            "空气",
+        ]
+    },
+    {
+        "correctAnswer": "汽车",
+        "cauGoc": "他每天开车去上班，最喜欢的就是他的 qìchē。",
+        "options": [
+            "气车",
+            "汽丰",
+            "汽东",
+            "汽车",
+        ]
+    },
+    {
+        "correctAnswer": "前面",
+        "cauGoc": "请站在我的 qiánmiàn，这样我可以更好地看到你。",
+        "options": [
+            "前明",
+            "剪面",
+            "前面",
+            "前闵",
+        ]
+    },
+    {
+        "correctAnswer": "钱包",
+        "cauGoc": "他打开 qiánbāo，准备付钱。",
+        "options": [
+            "钱抱",
+            "前包",
+            "浅宝",
+            "钱包",
+        ]
+    },
+    {
+        "correctAnswer": "请问",
+        "cauGoc": "在机场，他向工作人员 qǐngwèn 了登机口的位置。",
+        "options": [
+            "清闻",
+            "青问",
+            "请闻",
+            "请问",
+        ]
+    },
+	    {
+        "correctAnswer": "足球",
+        "cauGoc": "他非常喜欢踢 zúqiú。",
+        "options": [
+            "族球",
+            "足求",
+            "卒球",
+            "足球",
+        ]
+    },
+    {
+        "correctAnswer": "去年",
+        "cauGoc": "他 qùnián 去了很多地方旅行。",
+        "options": [
+            "去粘",
+            "却念",
+            "祛年",
+            "去年",
+        ]
+    },
+    {
+        "correctAnswer": "热情",
+        "cauGoc": "他对工作总是 rèqíng 满满。",
+        "options": [
+            "热晴",
+            "热清",
+            "热青",
+            "热情",
+        ]
+    },
+    {
+        "correctAnswer": "人民",
+        "cauGoc": "在节日庆典上，rénmín 欢聚一堂，共同庆祝。",
+        "options": [
+            "人目",
+            "仁民",
+            "人民",
+            "壬珉",
+        ]
+    },
+    {
+        "correctAnswer": "认识",
+        "cauGoc": "他们通过这次活动，rènshi 了很多新朋友。",
+        "options": [
+            "忍识",
+            "认织",
+            "认识",
+            "任职",
+        ]
+    },
+    {
+        "correctAnswer": "日常",
+        "cauGoc": "他的 rìcháng 生活非常规律。",
+        "options": [
+            "日掌",
+            "目常",
+            "曰常",
+            "日常",
+        ]
+    },
+    {
+        "correctAnswer": "猪肉",
+        "cauGoc": "今天的午餐有 zhūròu 炒青菜。",
+        "options": [
+            "猎肉",
+            "猪内",
+            "猪肉",
+            "猪丙",
+        ]
+    },
+    {
+        "correctAnswer": "三天",
+        "cauGoc": "他决定 yánlì 对待这个问题。",
+        "options": [
+            "二天",
+            "三天",
+            "四天",
+            "五天",
+        ]
+    },
+    {
+        "correctAnswer": "山",
+        "cauGoc": "我们计划周末去爬 shān。",
+        "options": [
+            "出",
+            "仙",
+            "汕",
+            "山",
+        ]
+    },
+    {
+        "correctAnswer": "商业",
+        "cauGoc": "这座城市的 shāngyè 非常发达。",
+        "options": [
+            "商叶",
+            "裳业",
+            "伤夜",
+            "商业",
+        ]
+    },
+    {
+        "correctAnswer": "上面",
+        "cauGoc": "他把书放在 shàngmiàn 的架子上。",
+        "options": [
+            "上西",
+            "上雨",
+            "上页",
+            "上面",
+        ]
+    },
+    {
+        "correctAnswer": "少年",
+        "cauGoc": "他 shàonián 时期就展现出了非凡的才华。",
+        "options": [
+            "少牟",
+            "少女",
+            "少车",
+            "少年",
+        ]
+    },
+    {
+        "correctAnswer": "介绍",
+        "cauGoc": "他向我 jièshào 了他的新朋友。",
+        "options": [
+            "戒绍",
+            "界勺",
+            "介召",
+            "介绍",
+        ]
+    },
+    {
+        "correctAnswer": "身体",
+        "cauGoc": "他每天锻炼，保持 shēntǐ 健康。",
+        "options": [
+            "身休",
+            "伸体",
+            "申体",
+            "身体",
+        ]
+    },
+    {
+        "correctAnswer": "什么",
+        "cauGoc": "你 shénme 时候回来？",
+        "options": [
+            "什幺",
+            "甚末",
+            "神未",
+            "什么",
+        ]
+    },
+    {
+        "correctAnswer": "生活",
+        "cauGoc": "我们应该珍惜自己的 shēnghuó，努力追求幸福。",
+        "options": [
+            "牲活",
+            "性话",
+            "笙货",
+            "生活",
+        ]
+    },
+    {
+        "correctAnswer": "老师",
+        "cauGoc": "我的 lǎoshī 非常关心我们的学习。",
+        "options": [
+            "老帅",
+            "劳狮",
+            "佬师",
+            "老师",
+        ]
+    },
+    {
+        "correctAnswer": "十分",
+        "cauGoc": "他对这个决定 shífēn 满意。",
+        "options": [
+            "什纷",
+            "拾分",
+            "实芬",
+            "十分",
+        ]
+    },
+    {
+        "correctAnswer": "时间",
+        "cauGoc": "他花了很多 shíjiān 来完成这个项目。",
+        "options": [
+            "时简",
+            "实间",
+            "识间",
+            "时间",
+        ]
+    },
+    {
+        "correctAnswer": "知识",
+        "cauGoc": "学习新的 zhīshi 是每个人成长的重要部分。",
+        "options": [
+            "只识",
+            "知织",
+            "智识",
+            "知识",
+        ]
+    },
+    {
+        "correctAnswer": "事情",
+        "cauGoc": "他正在处理一件重要的 shìqíng。",
+        "options": [
+            "事清",
+            "事晴",
+            "事倩",
+            "事情",
+        ]
+    },
+    {
+        "correctAnswer": "试验",
+        "cauGoc": "科学家们正在进行一项重要的 shìyàn。",
+        "options": [
+            "试脸",
+            "试险",
+            "试练",
+            "试验",
+        ]
+    },
+    {
+        "correctAnswer": "电视",
+        "cauGoc": "他每天晚上都看 diànshì。",
+        "options": [
+            "电視",
+            "电试",
+            "电示",
+            "电视",
+        ]
+    },
+    {
+        "correctAnswer": "是非",
+        "cauGoc": "在讨论这个问题时，大家常常会陷入 shìfēi 的争论中。",
+        "options": [
+            "是韭",
+            "足非",
+            "定韭",
+            "是非",
+        ]
+    },
+    {
+        "correctAnswer": "手机",
+        "cauGoc": "他经常用 shǒujī 看新闻。",
+        "options": [
+            "手击",
+            "守机",
+            "首基",
+            "手机",
+        ]
+    },
+    {
+        "correctAnswer": "书包",
+        "cauGoc": "小明每天背着 shūbāo 去上学。",
+        "options": [
+            "书抱",
+            "输饱",
+            "抒胞",
+            "书包",
+        ]
+    },
+    {
+        "correctAnswer": "树木",
+        "cauGoc": "公园里有很多 shùmù，空气非常清新。",
+        "options": [
+            "树木",
+            "村木",
+            "术本",
+            "树未",
+        ]
+    },
+    {
+        "correctAnswer": "谁家",
+        "cauGoc": "你知道 zhèjiā 的老板是谁吗？",
+        "options": [
+            "谁家",
+            "谁客",
+            "谁室",
+            "谁院",
+        ]
+    },
+    {
+        "correctAnswer": "水果",
+        "cauGoc": "他每天都会吃一些 shuǐguǒ 来保持健康。",
+        "options": [
+            "水呆",
+            "木果",
+            "水采",
+            "水果",
+        ]
+    },
+    {
+        "correctAnswer": "睡觉",
+        "cauGoc": "他太累了，一回到家就 shuìjiào 了。",
+        "options": [
+            "税较",
+            "睡较",
+            "睢觉",
+            "睡觉",
+        ]
+    },
+    {
+        "correctAnswer": "说话",
+        "cauGoc": "他 yīzhí 在说话，没有停过。",
+        "options": [
+            "说活",
+            "说话",
+            "说化",
+            "说花",
+        ]
+    },
+    {
+        "correctAnswer": "四季",
+        "cauGoc": "北京的 sìjì 分明，每个季节都有独特的风景。",
+        "options": [
+            "四李",
+            "田季",
+            "因季",
+            "四季",
+        ]
+    },
+    {
+        "correctAnswer": "送礼",
+        "cauGoc": "节日到了，大家都忙着 sònglǐ。",
+        "options": [
+            "送里",
+            "宋礼",
+            "颂理",
+            "送礼",
+        ]
+    },
+    {
+        "correctAnswer": "告诉",
+        "cauGoc": "他 gàosu 我明天会下雨。",
+        "options": [
+            "告拆",
+            "浩诉",
+            "告诉",
+            "浩拆",
+        ]
+    },
+    {
+        "correctAnswer": "岁月",
+        "cauGoc": "在漫长的 suìyuè 中，他逐渐变得成熟。",
+        "options": [
+            "岁玥",
+            "祟月",
+            "歲岳",
+            "岁月",
+        ]
+    },
+    {
+        "correctAnswer": "他们",
+        "cauGoc": "tāmen 今天要去公园玩。",
+        "options": [
+            "他门",
+            "她们",
+            "它们",
+            "他们",
+        ]
+    },
+    {
+        "correctAnswer": "她们",
+        "cauGoc": "tāmen 今天一起去公园玩了。",
+        "options": [
+            "他门",
+            "它门",
+            "她门",
+            "她们",
+        ]
+    },
+    {
+        "correctAnswer": "太阳",
+        "cauGoc": "今天的 tàiyáng 特别耀眼。",
+        "options": [
+            "大阳",
+            "太阴",
+            "汰洋",
+            "太阳",
+        ]
+    },
+    {
+        "correctAnswer": "体育",
+        "cauGoc": "学校非常重视学生的 tǐyù 发展。",
+        "options": [
+            "休肓",
+            "休有",
+            "体有",
+            "体育",
+        ]
+    },
+    {
+        "correctAnswer": "天空",
+        "cauGoc": "在晴朗的日子里，tiānkōng 总是那么湛蓝。",
+        "options": [
+            "夫穹",
+            "天穷",
+            "夭空",
+            "天空",
+        ]
+    },
+    {
+        "correctAnswer": "条件",
+        "cauGoc": "在签订合同之前，我们需要明确所有的 tiáojiàn。",
+        "options": [
+            "条侓",
+            "跳件",
+            "条侒",
+            "条件",
+        ]
+    },
+    {
+        "correctAnswer": "听见",
+        "cauGoc": "他在房间里 tīngjiàn 了外面的声音。",
+        "options": [
+            "听间",
+            "听减",
+            "听涧",
+            "听见",
+        ]
+    },
+    {
+        "correctAnswer": "同时",
+        "cauGoc": "我们 tóngshí 到达了目的地。",
+        "options": [
+            "铜时",
+            "桐实",
+            "同十",
+            "同时",
+        ]
+    },
+    {
+        "correctAnswer": "图片",
+        "cauGoc": "他在网上找到了一张漂亮的 túpiàn。",
+        "options": [
+            "图骗",
+            "途片",
+            "土偏",
+            "图片",
+        ]
+    },
+    {
+        "correctAnswer": "外面",
+        "cauGoc": "他决定去 wàimiàn 散步，呼吸新鲜空气。",
+        "options": [
+            "外闪",
+            "处面",
+            "外免",
+            "外面",
+        ]
+    },
+    {
+        "correctAnswer": "玩具",
+        "cauGoc": "孩子们在公园里玩 wánjù。",
+        "options": [
+            "玩俱",
+            "玩貝",
+            "玩貝",
+            "玩具",
+        ]
+    },
+    {
+        "correctAnswer": "晚上",
+        "cauGoc": "我们计划在 wǎnshàng 去看电影。",
+        "options": [
+            "晚下",
+            "晚上",
+            "晩上",
+            "完上",
+        ]
+    },
+    {
+        "correctAnswer": "网络",
+        "cauGoc": "在现代社会中，wǎngluò 已经成为人们生活中不可或缺的一部分。",
+        "options": [
+            "往洛",
+            "枉络",
+            "网络",
+            "旺骆",
+        ]
+    },
+    {
+        "correctAnswer": "忘记",
+        "cauGoc": "我 wàngjì 了带钥匙，结果进不了门。",
+        "options": [
+            "妄纪",
+            "望记",
+            "旺济",
+            "忘记",
+        ]
+    },
+    {
+        "correctAnswer": "文化",
+        "cauGoc": "我们应该尊重和传承 wénhuà 的多样性。",
+        "options": [
+            "文华",
+            "纹化",
+            "闻话",
+            "文化",
+        ]
+    },
+    {
+        "correctAnswer": "问题",
+        "cauGoc": "这个 wèntí 很难解决。",
+        "options": [
+            "问匙",
+            "闯匙",
+            "间匙",
+            "问题",
+        ]
+    },
+    {
+        "correctAnswer": "我们",
+        "cauGoc": "wǒmen 一起去公园玩吧。",
+        "options": [
+            "他门",
+            "我门",
+            "我们",
+            "它们",
+        ]
+    },
+    {
+        "correctAnswer": "五月",
+        "cauGoc": "wǔyuè 的天气渐渐变暖了。",
+        "options": [
+            "无乐",
+            "五越",
+            "午约",
+            "五月",
+        ]
+    },
+    {
+        "correctAnswer": "中午",
+        "cauGoc": "我们约定在 zhōngwǔ 见面。",
+        "options": [
+            "中牛",
+            "忠午",
+            "中仵",
+            "中午",
+        ]
+    },
+    {
+        "correctAnswer": "西方",
+        "cauGoc": "他对 xīfāng 文化非常感兴趣。",
+        "options": [
+            "酉方",
+            "栖方",
+            "硒方",
+            "西方",
+        ]
+    },
+    {
+        "correctAnswer": "休息",
+        "cauGoc": "他决定今天好好 xiūxi 一下。",
+        "options": [
+            "休媳",
+            "体息",
+            "休憩",
+            "休息",
+        ]
+    },
+    {
+        "correctAnswer": "学习",
+        "cauGoc": "他对 xuéxí 充满了热情。",
+        "options": [
+            "学刁",
+            "觉刁",
+            "学刁",
+            "学习",
+        ]
+    },
+    {
+        "correctAnswer": "洗澡",
+        "cauGoc": "每天晚上，他都会 xǐzǎo 后才睡觉。",
+        "options": [
+            "洗操",
+            "洗躁",
+            "洗燥",
+            "洗澡",
+        ]
+    },
+    {
+        "correctAnswer": "喜欢",
+        "cauGoc": "我特别 xǐhuān 吃冰淇淋。",
+        "options": [
+            "喜观",
+            "嘻欢",
+            "喜换",
+            "喜欢",
+        ]
+    },
+    {
+        "correctAnswer": "系统",
+        "cauGoc": "这个 xìtǒng 非常复杂，需要仔细研究。",
+        "options": [
+            "系桶",
+            "细统",
+            "丝桶",
+            "系统",
+        ]
+    },
+	    {
+        "correctAnswer": "下面",
+        "cauGoc": "他看了看 xiàmiàn 的风景，心情顿时好了许多。",
+        "options": [
+            "卞靣",
+            "卡面",
+            "下面",
+            "卞卡",
+        ]
+    },
+    {
+        "correctAnswer": "先生",
+        "cauGoc": "这位 xiānsheng 非常和蔼可亲。",
+        "options": [
+            "先声",
+            "仙胜",
+            "先生",
+            "鲜圣",
+        ]
+    },
+    {
+        "correctAnswer": "现在",
+        "cauGoc": "他 xiànzài 正在图书馆学习。",
+        "options": [
+            "现再",
+            "见在",
+            "县在",
+            "现在",
+        ]
+    },
+    {
+        "correctAnswer": "想法",
+        "cauGoc": "他的 xiǎngfǎ 总是与众不同。",
+        "options": [
+            "相发",
+            "祥法",
+            "箱筏",
+            "想法",
+        ]
+    },
+    {
+        "correctAnswer": "小孩",
+        "cauGoc": "公园里有很多 xiǎohái 在玩耍。",
+        "options": [
+            "小核",
+            "小该",
+            "小骇",
+            "小孩",
+        ]
+    },
+    {
+        "correctAnswer": "学校",
+        "cauGoc": "我的孩子每天都要去 xuéxiào 上课。",
+        "options": [
+            "学较",
+            "字校",
+            "学院",
+            "学校",
+        ]
+    },
+    {
+        "correctAnswer": "微笑",
+        "cauGoc": "她站在门口，脸上挂着 wēixiào。",
+        "options": [
+            "威效",
+            "微孝",
+            "危削",
+            "微笑",
+        ]
+    },
+    {
+        "correctAnswer": "一些",
+        "cauGoc": "我需要 yīxiē 时间来考虑这个问题。",
+        "options": [
+            "乙些",
+            "一此",
+            "衣些",
+            "一些",
+        ]
+    },
+    {
+        "correctAnswer": "写作",
+        "cauGoc": "他每天坚持 xiězuò，终于完成了这部小说。",
+        "options": [
+            "泻作",
+            "谢昨",
+            "写昨",
+            "写作",
+        ]
+    },
+    {
+        "correctAnswer": "谢谢",
+        "cauGoc": "他对我 shūshū 地笑了笑。",
+        "options": [
+            "谢谢",
+            "射射",
+            "射谢",
+            "谢谢",
+        ]
+    },
+    {
+        "correctAnswer": "新闻",
+        "cauGoc": "他每天都会看 xīnwén 了解最新的社会动态。",
+        "options": [
+            "新问",
+            "新间",
+            "新门",
+            "新闻",
+        ]
+    },
+    {
+        "correctAnswer": "星星",
+        "cauGoc": "夜晚的天空中，xīngxing 闪闪发光。",
+        "options": [
+            "惺惺",
+            "猩猩",
+            "曐曐",
+            "星星",
+        ]
+    },
+    {
+        "correctAnswer": "行动",
+        "cauGoc": "他决定立即 xíngdòng，不再拖延。",
+        "options": [
+            "形冻",
+            "行洞",
+            "形洞",
+            "行动",
+        ]
+    },
+    {
+        "correctAnswer": "高兴",
+        "cauGoc": "听到这个消息，他非常 gāoxìng。",
+        "options": [
+            "高幸",
+            "搞兴",
+            "稿杏",
+            "高兴",
+        ]
+    },
+    {
+        "correctAnswer": "休息",
+        "cauGoc": "工作了一整天，他决定 xiūxi 一下。",
+        "options": [
+            "体息",
+            "体思",
+            "休息",
+            "体想",
+        ]
+    },
+    {
+        "correctAnswer": "学习",
+        "cauGoc": "他每天都会花时间 xuéxí 新知识。",
+        "options": [
+            "学刁",
+            "觉刁",
+            "学刃",
+            "学习",
+        ]
+    },
+    {
+        "correctAnswer": "样子",
+        "cauGoc": "这件衣服的 yàngzi 很特别。",
+        "options": [
+            "漾梓",
+            "秧紫",
+            "洋滋",
+            "样子",
+        ]
+    },
+    {
+        "correctAnswer": "重要",
+        "cauGoc": "这个问题非常 zhòngyào，我们需要认真对待。",
+        "options": [
+            "种要",
+            "仲耀",
+            "重耀",
+            "重要",
+        ]
+    },
+    {
+        "correctAnswer": "爷爷",
+        "cauGoc": "我的 yéye 非常疼爱我。",
+        "options": [
+            "斧斧",
+            "爸爸",
+            "爷爷",
+            "伯伯",
+        ]
+    },
+    {
+        "correctAnswer": "也许",
+        "cauGoc": "他 yěxǔ 会迟到，因为路上堵车。",
+        "options": [
+            "野叙",
+            "冶序",
+            "也徐",
+            "也许",
+        ]
+    },
+    {
+        "correctAnswer": "页码",
+        "cauGoc": "请查看第12 yèmǎ 的内容。",
+        "options": [
+            "业码",
+            "页蚂",
+            "夜玛",
+            "页码",
+        ]
+    },
+    {
+        "correctAnswer": "一定",
+        "cauGoc": "这件事 yīdìng 要按时完成。",
+        "options": [
+            "一盯",
+            "乙定",
+            "已定",
+            "一定",
+        ]
+    },
+    {
+        "correctAnswer": "衣服",
+        "cauGoc": "她今天穿了一件漂亮的 yīfu。",
+        "options": [
+            "依伏",
+            "医符",
+            "衣服",
+            "依服",
+        ]
+    },
+    {
+        "correctAnswer": "医院",
+        "cauGoc": "他生病了，需要去 yīyuàn 看病。",
+        "options": [
+            "医完",
+            "医阮",
+            "医皖",
+            "医院",
+        ]
+    },
+    {
+        "correctAnswer": "电影",
+        "cauGoc": "他最喜欢看 diànyǐng。",
+        "options": [
+            "电映",
+            "电景",
+            "电影",
+            "电憬",
+        ]
+    },
+    {
+        "correctAnswer": "使用",
+        "cauGoc": "他经常 shǐyòng 这款软件来处理工作。",
+        "options": [
+            "史佣",
+            "驶拥",
+            "使佣",
+            "使用",
+        ]
+    },
+    {
+        "correctAnswer": "朋友",
+        "cauGoc": "我有很多 péngyou，他们都很支持我。",
+        "options": [
+            "朋发",
+            "棚友",
+            "明有",
+            "朋友",
+        ]
+    },
+    {
+        "correctAnswer": "有关",
+        "cauGoc": "这个决定 yǒuguān 到每个人的未来。",
+        "options": [
+            "有观",
+            "又关",
+            "友官",
+            "有关",
+        ]
+    },
+    {
+        "correctAnswer": "右手",
+        "cauGoc": "他习惯用 yòushǒu 写字。",
+        "options": [
+            "右首",
+            "佑手",
+            "又手",
+            "右手",
+        ]
+    },
+    {
+        "correctAnswer": "下雨",
+        "cauGoc": "今天下午可能会 xiàyǔ。",
+        "options": [
+            "下语",
+            "下悟",
+            "下雾",
+            "下雨",
+        ]
+    },
+    {
+        "correctAnswer": "语言",
+        "cauGoc": "学习一门新的 yǔyán 可以帮助我们更好地了解其他文化。",
+        "options": [
+            "语研",
+            "语颜",
+            "语沿",
+            "语言",
+        ]
+    },
+    {
+        "correctAnswer": "元旦",
+        "cauGoc": "我们全家一起庆祝 yuándàn。",
+        "options": [
+            "元但",
+            "完旦",
+            "园担",
+            "元旦",
+        ]
+    },
+    {
+        "correctAnswer": "远方",
+        "cauGoc": "他常常向往着 yuǎnfāng 的风景。",
+        "options": [
+            "远芳",
+            "元房",
+            "远访",
+            "远方",
+        ]
+    },
+    {
+        "correctAnswer": "医院",
+        "cauGoc": "他生病了，需要去 yīyuàn 看病。",
+        "options": [
+            "医阮",
+            "医完",
+            "医阮",
+            "医院",
+        ]
+    },
+    {
+        "correctAnswer": "月亮",
+        "cauGoc": "今晚的 yuèliang 特别圆。",
+        "options": [
+            "明壳",
+            "朋亮",
+            "月壳",
+            "月亮",
+        ]
+    },
+    {
+        "correctAnswer": "再见",
+        "cauGoc": "他挥手说道：“zàijiàn！”",
+        "options": [
+            "在见",
+            "载见",
+            "载建",
+            "再见",
+        ]
+    },
+    {
+        "correctAnswer": "存在",
+        "cauGoc": "在这个世界上，cúnzài 着许多未解之谜。",
+        "options": [
+            "存再",
+            "有在",
+            "村在",
+            "存在",
+        ]
+    },
+    {
+        "correctAnswer": "早晨",
+        "cauGoc": "每天 zǎochen 他都会去公园跑步。",
+        "options": [
+            "早辰",
+            "早曽",
+            "早曻",
+            "早晨",
+        ]
+    },
+    {
+        "correctAnswer": "怎么",
+        "cauGoc": "你 zěnme 还没来？",
+        "options": [
+            "乍么",
+            "怎末",
+            "怎公",
+            "怎么",
+        ]
+    },
+    {
+        "correctAnswer": "车站",
+        "cauGoc": "我们明天早上在 chēzhàn 集合。",
+        "options": [
+            "车战",
+            "扯展",
+            "车站",
+            "彻占",
+        ]
+    },
+    {
+        "correctAnswer": "寻找",
+        "cauGoc": "他一直在 xúnzhǎo 失踪的小猫。",
+        "options": [
+            "询招",
+            "巡早",
+            "训兆",
+            "寻找",
+        ]
+    },
+    {
+        "correctAnswer": "这个",
+        "cauGoc": "zhège 问题很简单，你一定能解决。",
+        "options": [
+            "遮个",
+            "这各",
+            "者个",
+            "这个",
+        ]
+    },
+    {
+        "correctAnswer": "着急",
+        "cauGoc": "他因为迟到而 zháojí 地跑了起来。",
+        "options": [
+            "着极",
+            "招急",
+            "昭疾",
+            "着急",
+        ]
+    },
+    {
+        "correctAnswer": "真实",
+        "cauGoc": "这个故事听起来很 zhēnshí。",
+        "options": [
+            "珍时",
+            "真识",
+            "贞石",
+            "真实",
+        ]
+    },
+    {
+        "correctAnswer": "正确",
+        "cauGoc": "这个答案非常 zhèngquè，没有任何错误。",
+        "options": [
+            "正碓",
+            "政却",
+            "证雀",
+            "正确",
+        ]
+    },
+    {
+        "correctAnswer": "知道",
+        "cauGoc": "他 zhīdào 了这件事的真相。",
+        "options": [
+            "知到",
+            "智道",
+            "之到",
+            "知道",
+        ]
+    },
+    {
+        "correctAnswer": "中国",
+        "cauGoc": "他非常喜欢学习 Zhōngguó 的文化和历史。",
+        "options": [
+            "中园",
+            "仲国",
+            "钟帼",
+            "中国",
+        ]
+    },
+    {
+        "correctAnswer": "重要",
+        "cauGoc": "这个决定非常 zhòngyào，需要慎重考虑。",
+        "options": [
+            "仲要",
+            "重药",
+            "众耀",
+            "重要",
+        ]
+    },
+    {
+        "correctAnswer": "住宅",
+        "cauGoc": "他最近搬进了新 de zhùzhái。",
+        "options": [
+            "住窄",
+            "柱宅",
+            "驻窄",
+            "住宅",
+        ]
+    },
+    {
+        "correctAnswer": "准备",
+        "cauGoc": "他正在 zhǔnbèi 明天的演讲。",
+        "options": [
+            "准畚",
+            "淮备",
+            "准备",
+            "凖俻",
+        ]
+    },
+    {
+        "correctAnswer": "桌子",
+        "cauGoc": "他坐在 zhuōzi 旁看书。",
+        "options": [
+            "卓子",
+            "倬自",
+            "拙字",
+            "桌子",
+        ]
+    },
+    {
+        "correctAnswer": "儿子",
+        "cauGoc": "他的 érzi 今年刚上小学。",
+        "options": [
+            "儿了",
+            "儿子",
+            "儿孑",
+            "儿予",
+        ]
+    },
+    {
+        "correctAnswer": "字典",
+        "cauGoc": "他买了一本 zìdiǎn 来学习汉字。",
+        "options": [
+            "字曲",
+            "宇典",
+            "字曲",
+            "字典",
+        ]
+    },
+    {
+        "correctAnswer": "走路",
+        "cauGoc": "他每天早晨都会 zǒulù 去公园锻炼。",
+        "options": [
+            "走露",
+            "足路",
+            "走赂",
+            "走路",
+        ]
+    },
+    {
+        "correctAnswer": "最好",
+        "cauGoc": "这件衣服的款式 zuìhǎo。",
+        "options": [
+            "最郝",
+            "取好",
+            "取郝",
+            "最好",
+        ]
+    },
+    {
+        "correctAnswer": "昨天",
+        "cauGoc": "他 zuótiān 去了图书馆。",
+        "options": [
+            "昨夭",
+            "昨犬",
+            "昨夫",
+            "昨天",
+        ]
+    },
+    {
+        "correctAnswer": "左边",
+        "cauGoc": "他把书包放在了 zuǒbiān 的椅子上。",
+        "options": [
+            "佐边",
+            "右迁",
+            "昨便",
+            "左边",
+        ]
+    },
+    {
+        "correctAnswer": "工作",
+        "cauGoc": "他每天都很认真地 gōngzuò。",
+        "options": [
+            "公做",
+            "工昨",
+            "工做",
+            "工作",
+        ]
+    },
+    {
+        "correctAnswer": "坐下",
+        "cauGoc": "老师让同学们 zuòxià 开始上课。",
+        "options": [
+            "座下",
+            "座右",
+            "坐右",
+            "坐下",
+        ]
+    },
+    {
+        "correctAnswer": "做事",
+        "cauGoc": "他 zuòshì 非常认真，从不马虎。",
+        "options": [
+            "做示",
+            "作事",
+            "昨式",
+            "做事",
+        ]
+    }
+];
+
+
+
+        let currentIndex = 0;
+        let isFreeMode = true;
+        let correctCount = 0;
+        let correctSentences = new Set();
+        let wrongSentences = new Set();
+        let autoContinue = false;
+        let userAnswers = [];
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function init() {
+            updateSentenceDisplay();
+        }
+
+        function updateSentenceDisplay() {
+            sentenceNumber.value = currentIndex + 1;
+            indicator.style.background = '#ffffe0';
+            indicator.innerHTML = `
+                <div style="font-size: 18px; font-weight: bold; color: #85ae5f;">${sentences[currentIndex].cauGoc}</div>
+            `;
+            updateOptions();
+            if (!isFreeMode) updateScore();
+        }
+
+        function updateOptions() {
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = shuffleArray(sentences[currentIndex].options);
+            shuffledOptions.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'optionBtn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function moveSentence(direction) {
+            currentIndex = (currentIndex + direction + sentences.length) % sentences.length;
+            updateSentenceDisplay();
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const correctAnswer = sentences[currentIndex].correctAnswer;
+            const optionButtons = optionsContainer.getElementsByClassName('optionBtn');
+            
+            // Clear previous styles
+            for (let btn of optionButtons) {
+                btn.classList.remove('correct', 'wrong');
+                btn.disabled = !isFreeMode; // Only disable buttons in Test Mode
+            }
+
+            // Style the correct and selected buttons
+            for (let btn of optionButtons) {
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                }
+                if (btn.textContent === selectedAnswer && selectedAnswer !== correctAnswer) {
+                    btn.classList.add('wrong');
+                }
+            }
+
+            let audioToPlay;
+            if (selectedAnswer === correctAnswer) {
+                indicator.style.background = '#B7D7AA';
+                indicator.innerHTML = `
+                    <div style="font-size: 18px; font-weight: bold; color: #000000;">${sentences[currentIndex].cauGoc}</div>
+                `;
+                audioToPlay = correctAudio;
+            } else {
+                indicator.style.background = '#CE6D5E';
+                indicator.innerHTML = `
+                    <div style="font-size: 18px; font-weight: bold; color: #000000;">${sentences[currentIndex].cauGoc}</div>
+                `;
+                audioToPlay = wrongAudio;
+            }
+
+            audioToPlay.play().catch(error => {
+                console.error('Audio playback failed:', error);
+            });
+
+            if (!isFreeMode) {
+                userAnswers[currentIndex] = selectedAnswer;
+                if (selectedAnswer === correctAnswer && !correctSentences.has(currentIndex)) {
+                    correctCount++;
+                    correctSentences.add(currentIndex);
+                    wrongSentences.delete(currentIndex);
+                } else if (selectedAnswer !== correctAnswer && !correctSentences.has(currentIndex)) {
+                    wrongSentences.add(currentIndex);
+                }
+                updateScore();
+
+                // Auto-move to next sentence in Test Mode
+                audioToPlay.onended = () => {
+                    if (userAnswers.length === sentences.length) {
+                        showResults();
+                    } else {
+                        setTimeout(() => {
+                            moveSentence(1);
+                        }, 200);
+                    }
+                };
+            } else if (isFreeMode && autoContinue && selectedAnswer === correctAnswer) {
+                // Auto-move in Free Mode only if answer is correct and autoContinue is enabled
+                audioToPlay.onended = () => {
+                    setTimeout(() => {
+                        moveSentence(1);
+                    }, 200);
+                };
+            } else {
+                correctAudio.onended = null;
+                wrongAudio.onended = null;
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `${correctCount}/${sentences.length}`;
+            scoreDisplay.style.display = 'block'; // Hiển thị score trong Test Mode
+        }
+
+        function showResults() {
+            let resultText = `练习完成！\n正确答案数量：${correctCount}/${sentences.length}\n正确率：${((correctCount / sentences.length) * 100).toFixed(2)}%\n错误题目：`;
+            wrongSentences.forEach(index => {
+                resultText += `\n第${index + 1}题：\n你的选择：${userAnswers[index] || '未选择'}\n正确答案：${sentences[index].correctAnswer}\n`;
+            });
+            if (wrongSentences.size === 0) {
+                resultText += '\n全部正确！';
+            }
+            resultsDisplay.textContent = resultText;
+            resultsDisplay.style.display = 'block';
+        }
+
+        prevBtn.onclick = () => {
+            moveSentence(-1);
+        };
+
+        nextBtn.onclick = () => {
+            moveSentence(1);
+        };
+
+        freeModeBtn.onclick = () => {
+            isFreeMode = true;
+            freeModeBtn.classList.add('active-mode');
+            testModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = false;
+            autoContinueBtn.classList.remove('disabled');
+            scoreDisplay.style.display = 'none';
+            wrongSentencesDisplay.style.display = 'none';
+            resultsDisplay.style.display = 'none';
+            updateSentenceDisplay();
+        };
+
+        testModeBtn.onclick = () => {
+            isFreeMode = false;
+            testModeBtn.classList.add('active-mode');
+            freeModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = true;
+            autoContinueBtn.classList.add('disabled');
+            scoreDisplay.style.display = 'block';
+            currentIndex = 0;
+            correctCount = 0;
+            correctSentences.clear();
+            wrongSentences.clear();
+            userAnswers = [];
+            for (let i = 0; i < sentences.length; i++) {
+                wrongSentences.add(i);
+            }
+            updateSentenceDisplay();
+        };
+
+        autoContinueBtn.onclick = () => {
+            if (isFreeMode) {
+                autoContinue = !autoContinue;
+                autoContinueBtn.classList.toggle('active-mode');
+                if (!autoContinue) {
+                    correctAudio.onended = null;
+                }
+            }
+        };
+
+        sentenceNumber.onchange = () => {
+            const num = parseInt(sentenceNumber.value) - 1;
+            if (!isNaN(num) && num >= 0 && num < sentences.length) {
+                currentIndex = num;
+                updateSentenceDisplay();
+            } else {
+                alert(`输入范围： 1 到 ${sentences.length}`);
+                updateSentenceDisplay();
+            }
+        };
+
+        sentenceNumber.onkeydown = (e) => {
+            if (e.key === 'ArrowLeft') {
+                moveSentence(-1);
+            }
+            if (e.key === 'ArrowRight') {
+                moveSentence(1);
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
